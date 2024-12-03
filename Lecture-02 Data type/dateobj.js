@@ -8,6 +8,6 @@ console.log('starting timer...');
 setTimeout(() => {
     const millis = Data.now() - start;
 
-    console.log('seconds elapsed = ${Math.floor(millis / 1000)}');
+    console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`);
     // expected output: second elased = 2
 }, 2000);
