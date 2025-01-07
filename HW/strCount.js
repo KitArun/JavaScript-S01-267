@@ -1,11 +1,11 @@
 function countString(input, type) {
   input = input.trim();
 
-  if (type == "w") {//แบ่งข้อความออกเป็นอาร์เรย์ตามตัวแบ่งที่กำหนด
+  if (type == "w") { //แบ่งข้อความออกเป็นอาร์เรย์ตามตัวแบ่งที่กำหนด
     return input.length === 0 ? 0 : input.split(/\s+/).length;
-  } else if (type == "c") {//แทนที่ (replace) ข้อความที่ตรงกับ RegEx pattern ที่กำหนด
+  } else if (type == "c") { //แทนที่ (replace) ข้อความที่ตรงกับ RegEx pattern ที่กำหนด
     return input.replace(/\s+/g, "").length;
-  } else if (type == "v") {// เพื่อค้นหาข้อความในสตริงที่ตรงกับ RegEx pattern และคืนค่าผลลัพธ์เป็นอาร์เรย์ของค่าที่พบ
+  } else if (type == "v") { // เพื่อค้นหาข้อความในสตริงที่ตรงกับ RegEx pattern และคืนค่าผลลัพธ์เป็นอาร์เรย์ของค่าที่พบ
     const vowels = input.match(/[aeiouAEIOU]/g);
     return vowels ? vowels.length : 0;
   } else {
