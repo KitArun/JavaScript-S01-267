@@ -17,8 +17,80 @@ const logs = [
 
 // Log processing function
 function processLogs(logs) {
-    // TODO: Your code here
-    return {};
+    const userActions = {};
+    const userSessions = {};
+    const userErrors = {};
+
+    // หาก logs ว่าง (ไม่มีการกระทำใดๆ)
+    if (logs.length === 0) {
+        return {
+            totalActionsPerUser: {},
+            sessionDurations: {},
+            errorCount: {},
+            mostActiveUser: "", // เปลี่ยนจาก null เป็น "" ตามที่การทดสอบต้องการ
+        };
+    }
+
+    logs.forEach(log => {
+        const { timestamp, user, action, details } = log;
+
+        // เริ่มต้นข้อมูลผู้ใช้หากยังไม่มี
+        if (!userActions[user]) {
+            userActions[user] = 0;
+            userSessions[user] = [];
+            userErrors[user] = 0;
+        }
+
+        // นับการกระทำทั้งหมด
+        userActions[user]++;
+
+        // จัดการเวลาของเซสชัน (LOGIN, LOGOUT)
+        if (action === 'LOGIN') {
+            userSessions[user].push(new Date(timestamp));
+        } else if (action === 'LOGOUT') {
+            const loginTime = userSessions[user].pop();
+            if (loginTime) {
+                const logoutTime = new Date(timestamp);
+                const sessionDuration = Math.round((logoutTime - loginTime) / 60000); // เป็นนาที
+                userSessions[user].push(sessionDuration);
+            }
+        }
+
+        // นับจำนวนข้อผิดพลาด
+        if (action === 'ERROR') {
+            userErrors[user]++;
+        }
+    });
+
+    // ตรวจสอบว่ามีผู้ใช้ที่ไม่ได้ทำการใดๆ เลยหรือไม่
+    const allUsers = new Set(logs.map(log => log.user));
+    allUsers.forEach(user => {
+        // หากผู้ใช้ไม่มีการกระทำใดๆ จะตั้งค่าให้เป็น 0
+        if (!userActions[user]) {
+            userActions[user] = 0; // ไม่มีการกระทำ
+            userSessions[user] = []; // ไม่มีเซสชัน
+            userErrors[user] = 0; // ไม่มีข้อผิดพลาด
+        }
+    });
+
+    // คำนวณผู้ใช้ที่มีการกระทำมากที่สุด (หากมีการเสมอกันจะเลือกผู้ใช้ที่มีชื่อเรียงลำดับก่อน)
+    const mostActiveUser = Object.keys(userActions).reduce((a, b) =>
+        userActions[a] > userActions[b] ? a : (userActions[a] === userActions[b] ? (a < b ? a : b) : b)
+    );
+
+    // เตรียมรายงาน
+    const report = {
+        totalActionsPerUser: userActions,
+        sessionDurations: Object.fromEntries(
+            Object.entries(userSessions).map(([user, sessions]) => {
+                return [user, sessions.filter(session => typeof session === 'number')];
+            })
+        ),
+        errorCount: userErrors,
+        mostActiveUser: mostActiveUser || "", // เปลี่ยนจาก null เป็น "" ถ้าไม่มีผู้ใช้
+    };
+
+    return report;
 }
 
 const report = processLogs(logs);
