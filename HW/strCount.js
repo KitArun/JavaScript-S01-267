@@ -1,4 +1,4 @@
-function countString(input, type) { rpsd;fkpsdkfskpl;
+function countString(input, type) {
   input = input.trim();
 
   if (type == "w") { //แบ่งข้อความออกเป็นอาร์เรย์ตามตัวแบ่งที่กำหนด
